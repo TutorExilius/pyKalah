@@ -1,0 +1,52 @@
+[tool.black]
+exclude = '''
+/(
+  | __pycache__
+  | view/ui
+)/
+'''
+
+[tool.mypy]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_any_generics = true
+disallow_untyped_calls = true
+no_implicit_optional = true
+ignore_missing_imports = true
+no_site_packages = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = "pykalah.view.*"
+allow_untyped_defs = true
+allow_untyped_calls = true
+
+[[tool.mypy.overrides]]
+module = "pykalah.view.ui.*"
+allow_untyped_defs = true
+allow_untyped_calls = true
+
+[tool.poetry]
+name = "pykalah"
+version = "0.1.0"
+description = ""
+authors = ["Tutor Exilius <tutorexilius@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+PySide2 = "^5.15.2"
+asyncqt = "^0.8.0"
+
+[tool.poetry.dev-dependencies]
+black = "^22.6.0"
+mypy = "^0.961"
+flake8 = "^4.0.1"
+pylint = "^2.14.4"
+isort = "^5.10.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
