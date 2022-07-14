@@ -16,7 +16,7 @@ def main() -> None:
     loop = QEventLoop(app)
     asyncio.set_event_loop(loop)
 
-    window = MainWindow()
+    window = MainWindow(None, initial_amount_pieces=3)
     window.show()
 
     with loop:

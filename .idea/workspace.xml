@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4c8a097e-6666-46df-ad1a-b08ee6b9c82d" name="Changes" comment="Initial Commit" />
+    <list default="true" id="4c8a097e-6666-46df-ad1a-b08ee6b9c82d" name="Changes" comment="feat: first playable version, set version number to v1.0.0">
+      <change beforePath="$PROJECT_DIR$/pykalah/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/pykalah/game.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -42,6 +44,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="F:\dev\python\pyKalah\pykalah" />
       <recent name="F:\dev\python\pyKalah\pykalah\view\ui" />
       <recent name="F:\dev\python\pyKalah\pykalah\view\ui\static" />
     </key>
@@ -69,7 +72,7 @@
       <method v="2">
         <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_black" />
         <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_isort" />
-        <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_flake8" />
+        <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_mypy" />
         <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_pylint" />
         <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_mypy" />
       </method>
@@ -91,7 +94,21 @@
       <option name="project" value="LOCAL" />
       <updated>1657740726246</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Initial Commit">
+      <created>1657741410941</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1657741410941</updated>
+    </task>
+    <task id="LOCAL-00003" summary="feat: first playable version, set version number to v1.0.0">
+      <created>1657836807248</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1657836807248</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -108,6 +125,14 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial Commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial Commit" />
+    <MESSAGE value="feat: first playable version, set version number to v1.0.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: first playable version, set version number to v1.0.0" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="self.game_board" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
