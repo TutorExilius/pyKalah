@@ -17,7 +17,9 @@ class CupType(IntEnum):
 class StateType(IntEnum):
     LAST_IN_EMPTY_CUP = auto()
     LAST_IN_KHALA = auto()
-    GAME_FINISHED = auto()
+    FINISHED_WITH_DRAW = auto()
+    FINISHED_WITH_PLAYER_1_WON = auto()
+    FINISHED_WITH_PLAYER_2_WON = auto()
     GAME_CONTINUE = auto()
 
 
@@ -201,15 +203,18 @@ class GameModel:
                 > self._player_2.game_board[6].pieces
             ):
                 print("Player 1 Won")
+                state = StateType.FINISHED_WITH_PLAYER_1_WON
             elif (
                 self._player_1.game_board[6].pieces
                 < self._player_2.game_board[6].pieces
             ):
                 print("Player 2 Won")
+                state = StateType.FINISHED_WITH_PLAYER_2_WON
             else:
                 print("DRAW")
+                state = StateType.FINISHED_WITH_DRAW
 
-            return StateType.GAME_FINISHED
+            return state
 
     def _continue_game(self):
         # player_1_cups = (cup for cup in self.game_board.cups if cup.id in self._player_1.cup_ids)

@@ -1,17 +1,22 @@
 """The QT models, based on game_models. This Models will
 combine the models with the Qt world/UI"""
 
-from PySide2.QtWidgets import QMainWindow, QPushButton
+from PySide2.QtCore import QObject, Signal
+from PySide2.QtWidgets import QMainWindow, QMessageBox, QPushButton
 
 from pykalah.models import GameModel, StateType
 
 
-class Game:
+class Game(QObject):
+    game_finished = Signal()
+
     def __init__(
         self,
         parent_window: QMainWindow,
         initial_amount_pieces: int,
     ):
+        super(Game, self).__init__()
+
         self.parent_window = parent_window
         self.game_model = GameModel(initial_amount_pieces)
         self._bind_cup_buttons()
@@ -145,5 +150,24 @@ class Game:
         cup_data = cup_button_id_map[cup_button.objectName()]
         cup_data["pieces"] = int(cup_button.text())
 
-        if self.game_model.distribute_pieces(cup_data) == StateType.GAME_FINISHED:
-            pass  # TODO: print MessageBox with won player and reset game
+        state = self.game_model.distribute_pieces(cup_data)
+
+        if state in [
+            StateType.FINISHED_WITH_DRAW,
+            StateType.FINISHED_WITH_PLAYER_1_WON,
+            StateType.FINISHED_WITH_PLAYER_2_WON,
+        ]:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Finished")
+
+            if state == StateType.FINISHED_WITH_PLAYER_1_WON:
+                message = "Player 1 WON!"
+            elif state == StateType.FINISHED_WITH_PLAYER_2_WON:
+                message = "Player 2 WON!"
+            else:
+                message = "No Winner."
+
+            msg_box.setText(message)
+            msg_box.exec_()
+
+            self.game_finished.emit()

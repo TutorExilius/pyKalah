@@ -1,7 +1,7 @@
-# pyKalah v1.0.0
+# pyKalah v1.1.0
 
 Kalah, also called Kalaha or Mancala is a game in the mancala family invented in 
-the United States  by William Julius Champion, Jr. in 1940. This game is sometimes
+the United States by William Julius Champion, Jr. in 1940. This game is sometimes
 also called "Kalahari", possibly by false etymology from the Kalahari desert in Namibia.
 
 For most of its variations, Kalah is a solved game with a first-player win if both 
