@@ -408,7 +408,12 @@ class Ui_MainWindow(object):
         self.verticalLayout_11.setObjectName(u"verticalLayout_11")
         self.label_player_1_name = QLabel(self.centralwidget)
         self.label_player_1_name.setObjectName(u"label_player_1_name")
-        self.label_player_1_name.setFont(font)
+        font2 = QFont()
+        font2.setPointSize(19)
+        font2.setBold(True)
+        font2.setWeight(75)
+        self.label_player_1_name.setFont(font2)
+        self.label_player_1_name.setStyleSheet(u"color: red; font-size: 19pt; font-weight:bold;")
         self.label_player_1_name.setAlignment(Qt.AlignCenter)
 
         self.verticalLayout_11.addWidget(self.label_player_1_name)
@@ -442,7 +447,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"pyKalah v1.0.0", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"pyKalah v1.2.0", None))
         self.action_Close.setText(QCoreApplication.translate("MainWindow", u"&Close", None))
         self.action_About_Qt.setText(QCoreApplication.translate("MainWindow", u"&About Qt", None))
         self.label_player_2_name.setText(QCoreApplication.translate("MainWindow", u"Player 2", None))
@@ -460,17 +465,6 @@ class Ui_MainWindow(object):
         self.pushButton_player_2_cup_1.setText(QCoreApplication.translate("MainWindow", u"6", None))
         self.pushButton_player_1_cup_6.setText(QCoreApplication.translate("MainWindow", u"6", None))
         self.pushButton_player_1_kalah.setText(QCoreApplication.translate("MainWindow", u"0", None))
-        self.label_player_1_name.setStyleSheet(QCoreApplication.translate("MainWindow", u"QPushButton{\n"
-"border: 5px inset grey;\n"
-"border-radius: 40px;\n"
-"background-color: #ddd;\n"
-"}\n"
-"\n"
-"QPushButton:hover{\n"
-"border: 5px inset #445677;\n"
-"background-color: #fff;\n"
-"font-size: 24pt;\n"
-"}", None))
         self.label_player_1_name.setText(QCoreApplication.translate("MainWindow", u"Player 1", None))
         self.menu_File.setTitle(QCoreApplication.translate("MainWindow", u"&File", None))
         self.menu_Help.setTitle(QCoreApplication.translate("MainWindow", u"&Help", None))

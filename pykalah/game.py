@@ -1,10 +1,10 @@
 """The QT models, based on game_models. This Models will
 combine the models with the Qt world/UI"""
-
 from PySide2.QtCore import QObject, Signal
 from PySide2.QtWidgets import QMainWindow, QMessageBox, QPushButton
 
-from pykalah.models import GameModel, StateType
+import pykalah.models
+from pykalah.models import GameModel, PlayerType, StateType
 
 
 class Game(QObject):
@@ -72,6 +72,12 @@ class Game(QObject):
 
     def start_game(self):
         self.game_model.initialize_player()
+        self.parent_window.label_player_1_name.setStyleSheet(
+            "color: red; font-size: 19pt; font-weight:bold;"
+        )
+        self.parent_window.label_player_2_name.setStyleSheet(
+            "color: black; font-size: 19pt; font-weight:normal;"
+        )
 
     def distribute_cup(
         self,
@@ -171,3 +177,18 @@ class Game(QObject):
             msg_box.exec_()
 
             self.game_finished.emit()
+        else:
+            if self.game_model._current_turn.player_type == PlayerType.PLAYER_1:
+                self.parent_window.label_player_1_name.setStyleSheet(
+                    "color: red; font-size: 19pt; font-weight:bold;"
+                )
+                self.parent_window.label_player_2_name.setStyleSheet(
+                    "color: black; font-size: 19pt; font-weight:normal;"
+                )
+            else:
+                self.parent_window.label_player_2_name.setStyleSheet(
+                    "color: red; font-size: 19pt; font-weight:bold;"
+                )
+                self.parent_window.label_player_1_name.setStyleSheet(
+                    "color: black; font-size: 19pt; font-weight:normal;"
+                )

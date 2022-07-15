@@ -1,7 +1,10 @@
 """The game classes"""
-
+import time
 from enum import IntEnum, auto
 from itertools import cycle
+
+from PySide2.QtCore import QObject, Signal
+from PySide2.QtWidgets import QApplication, QPushButton
 
 
 class PlayerType(IntEnum):
@@ -95,12 +98,17 @@ class GameBoardModel:
             return {value: key for key, value in player_1_map.items()}
 
 
-class PlayerModel:
+class PlayerModel(QObject):
+    animate_button = Signal(QPushButton, bool, bool)
+    finish_animation = Signal()
+
     def __init__(
         self,
         game_board: GameBoardModel,
         player_type: PlayerType,
     ):
+        super(PlayerModel, self).__init__()
+
         self.player_type = player_type
         self.game_board = game_board.get_player_cups(player_type)
         self.counterpart_cup_map = game_board.get_player_counterpart_cup_map(
@@ -116,23 +124,37 @@ class PlayerModel:
     def distribute_pieces(self, cup_id: int, pieces: int) -> StateType:
         cups = cycle(self.game_board)
 
+        old_button_styles = {}
+
         for cup in cups:
             if cup.id == cup_id:
                 cup.pieces = 0
 
                 if hasattr(cup, "_button"):
                     cup._button.setText(str(0))
+                    self.animate_button.emit(cup._button, True, False)
 
                 for _ in range(pieces):
+
                     next_cup = next(cups)
+                    is_kalah = next_cup.cup_type == CupType.KALAH
                     next_cup.pieces += 1
 
                     if hasattr(next_cup, "_button"):
                         next_cup._button.setText(str(next_cup.pieces))
+                        self.animate_button.emit(next_cup._button, False, is_kalah)
 
                     last_cup = next_cup
+                    QApplication.processEvents()
+                    time.sleep(0.2)
 
-                return self._check_rule(last_cup)
+                result = self._check_rule(last_cup)
+                break
+
+        self.finish_animation.emit()
+        QApplication.processEvents()
+
+        return result
 
     def _check_rule(self, last_cup: CupModel) -> StateType:
         state = StateType.GAME_CONTINUE
@@ -173,11 +195,67 @@ class GameModel:
         self._player_1 = None
         self._player_2 = None
         self._current_turn = None
+        self._backuped_cup_styles = None
 
     def initialize_player(self) -> None:
         self._player_1 = PlayerModel(self.game_board, PlayerType.PLAYER_1)
         self._player_2 = PlayerModel(self.game_board, PlayerType.PLAYER_2)
         self._current_turn = self._player_1
+
+        self._player_1.animate_button.connect(self.inserting_piece_animation)
+        self._player_1.finish_animation.connect(self.finish_animation)
+
+        self._player_2.animate_button.connect(self.inserting_piece_animation)
+        self._player_2.finish_animation.connect(self.finish_animation)
+
+        self._backuped_cup_styles = {}
+
+    def inserting_piece_animation(
+        self, cup_button: QPushButton, is_start_cup, is_kalah
+    ):
+        print(cup_button.objectName(), " >> START" if is_start_cup else "")
+
+        if cup_button not in self._backuped_cup_styles:
+            self._backuped_cup_styles[cup_button] = cup_button.styleSheet()
+
+        if is_start_cup:
+            cup_button.setStyleSheet(
+                """
+                QPushButton{
+                    border: 5px inset red;
+                    background-color: #fff;
+                    font-size: 24pt;
+                    border-radius: 40px;
+                }
+                """
+            )
+        else:
+            if is_kalah:
+                cup_button.setStyleSheet(
+                    """
+                    QPushButton{
+                        border: 5px inset #445677;
+                        background-color: #fff;
+                        font-size: 24pt;
+                        border-radius: 15px;
+                    }
+                    """
+                )
+            else:
+                cup_button.setStyleSheet(
+                    """
+                    QPushButton{
+                        border: 5px inset #445677;
+                        background-color: #fff;
+                        font-size: 24pt;
+                        border-radius: 40px;
+                    }
+                    """
+                )
+
+    def finish_animation(self):
+        for button, style in self._backuped_cup_styles.items():
+            button.setStyleSheet(style)
 
     def distribute_pieces(self, cup_data: dict[str, str | int]) -> StateType:
         if cup_data["cup_id"] not in self._current_turn.cup_ids:

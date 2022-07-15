@@ -16,7 +16,9 @@ def main() -> None:
     loop = QEventLoop(app)
     asyncio.set_event_loop(loop)
 
-    window = MainWindow(None, initial_amount_pieces=1)
+    window = MainWindow(None, initial_amount_pieces=6)
+
+    # chat_bot = Bot(window)
     window.show()
 
     with loop:
