@@ -1,9 +1,10 @@
 """The main window widget"""
-
+import time
 from functools import partial
 
 from PySide2.QtCore import Signal
-from PySide2.QtWidgets import QMainWindow, QMessageBox, QPushButton, QWidget
+from PySide2.QtWidgets import (QApplication, QMainWindow, QMessageBox,
+                               QPushButton, QWidget)
 
 from pykalah.game import Game
 from pykalah.view.ui.ui_main_window import Ui_MainWindow
@@ -23,10 +24,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         super().__init__(parent)
         self.setupUi(self)
+        self.frame_game.setVisible(False)
+        self.pushButton_start_game.setVisible(True)
+
         self.setFixedSize(self.sizeHint())
 
-        self.start_new_game()
-
+        # connections
+        self.pushButton_start_game.clicked.connect(self.start_new_game)
         self.action_About_Qt.triggered.connect(  # pylint: disable=no-member
             lambda *args, **kwargs: QMessageBox.aboutQt(self)
         )
@@ -110,6 +114,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if button.objectName() not in (
                 "pushButton_player_1_kalah",
                 "pushButton_player_2_kalah",
+                "pushButton_start_game",
             ):
                 button.setText(str(self.initial_amount_pieces))
 
@@ -125,7 +130,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.reset_kalah_buttons()
 
         self.game = Game(self, self.initial_amount_pieces)
-        self.game.game_finished.connect(self.start_new_game)
+        self.game.game_finished.connect(self.game_finished)
+        self.label_state.setText("Playing...")
+
+        self.frame_game.setVisible(True)
+        self.pushButton_start_game.setVisible(False)
+
+        self.setFixedSize(self.sizeHint())
+
+    def game_finished(self, force_finish=False):
+        if not force_finish:
+            self.label_state.setText(
+                f"Finished: Winner is {self.game.winner}<br>.. game reset in 10 seconds."
+            )
+            QApplication.processEvents()
+
+            time.sleep(10)
+
+        self.frame_game.setVisible(False)
+        self.pushButton_start_game.setVisible(True)
 
     def on_cup_button_clicked(self, cup_button):
         self.cup_clicked.emit(cup_button)

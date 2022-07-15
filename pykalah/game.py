@@ -17,6 +17,7 @@ class Game(QObject):
     ):
         super(Game, self).__init__()
 
+        self.winner = None
         self.parent_window = parent_window
         self.game_model = GameModel(initial_amount_pieces)
         self._bind_cup_buttons()
@@ -168,13 +169,16 @@ class Game(QObject):
 
             if state == StateType.FINISHED_WITH_PLAYER_1_WON:
                 message = "Player 1 WON!"
+                self.winner = self.parent_window.label_player_1_name.text()
             elif state == StateType.FINISHED_WITH_PLAYER_2_WON:
                 message = "Player 2 WON!"
+                self.winner = self.parent_window.label_player_2_name.text()
             else:
                 message = "No Winner."
+                self.winner = "No Winner (DRAW)"
 
             msg_box.setText(message)
-            msg_box.exec_()
+            # msg_box.exec_()
 
             self.game_finished.emit()
         else:
