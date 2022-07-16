@@ -141,7 +141,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.game.game_finished.connect(self.game_finished)
         self.label_state.setText(
             f"<font color=red>{self.label_player_1_name.text()}"
-            "</font><br>it's your turn turn.."
+            "</font><br>it's your turn.."
         )
 
         self.frame_game.setVisible(True)

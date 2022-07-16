@@ -203,7 +203,7 @@ class Game(QObject):
                 )
                 self.parent_window.label_state.setText(
                     f"<font color=red>{self.parent_window.label_player_1_name.text()}"
-                    "</font><br>it's your turn turn.."
+                    "</font><br>it's your turn.."
                 )
 
             else:
@@ -215,5 +215,5 @@ class Game(QObject):
                 )
                 self.parent_window.label_state.setText(
                     f"<font color=red>{self.parent_window.label_player_2_name.text()}"
-                    "</font><br>it's your turn turn.."
+                    "</font><br>it's your turn.."
                 )
