@@ -32,27 +32,27 @@ class StateType(IntEnum):
 
 
 class SoundManager(QObject):
-    def __init__(self):
+    def __init__(self) -> None:
         super(SoundManager, self).__init__()
 
-        self.registered_signals = []
+        self.registered_signals: list[Signal] = []
 
         self.qsound_collections = {
             StateType.CUP_PIECE_INSERT: [
-                QSound(str(Path(__file__).parent / "sounds" / f"cup_insert_1.wav")),
-                QSound(str(Path(__file__).parent / "sounds" / f"cup_insert_2.wav")),
+                QSound(str(Path(__file__).parent / "sounds" / "cup_insert_1.wav")),
+                QSound(str(Path(__file__).parent / "sounds" / "cup_insert_2.wav")),
             ],
             StateType.LAST_IN_EMPTY_CUP: [
                 QSound(
-                    str(Path(__file__).parent / "sounds" / f"last_in_empty_cup_1.wav")
+                    str(Path(__file__).parent / "sounds" / "last_in_empty_cup_1.wav")
                 ),
                 QSound(
-                    str(Path(__file__).parent / "sounds" / f"last_in_empty_cup_2.wav")
+                    str(Path(__file__).parent / "sounds" / "last_in_empty_cup_2.wav")
                 ),
             ],
             StateType.LAST_IN_KHALA: [
                 QSound(
-                    str(Path(__file__).parent / "sounds" / f"last_in_kalah_sound_1.wav")
+                    str(Path(__file__).parent / "sounds" / "last_in_kalah_sound_1.wav")
                 ),
             ],
             StateType.FINISHED_WITH_PLAYER_1_WON: [
@@ -60,7 +60,7 @@ class SoundManager(QObject):
                     str(
                         Path(__file__).parent
                         / "sounds"
-                        / f"finished_with_winner_sound_1.wav"
+                        / "finished_with_winner_sound_1.wav"
                     )
                 ),
             ],
@@ -69,7 +69,7 @@ class SoundManager(QObject):
                     str(
                         Path(__file__).parent
                         / "sounds"
-                        / f"finished_with_winner_sound_1.wav"
+                        / "finished_with_winner_sound_1.wav"
                     )
                 ),
             ],
@@ -78,21 +78,21 @@ class SoundManager(QObject):
                     str(
                         Path(__file__).parent
                         / "sounds"
-                        / f"finished_with_draw_sound_1.wav"
+                        / "finished_with_draw_sound_1.wav"
                     )
                 ),
             ],
             StateType.GAME_CLOSE: [
-                QSound(str(Path(__file__).parent / "sounds" / f"bye.wav")),
+                QSound(str(Path(__file__).parent / "sounds" / "bye.wav")),
             ],
         }
 
-    def register(self, signal: Signal):
+    def register(self, signal: Signal) -> None:
         if signal not in self.registered_signals:
             signal.connect(self._play)
             self.registered_signals.append(signal)
 
-    def _play(self, state: StateType):
+    def _play(self, state: StateType) -> None:
         if state in self.qsound_collections:
             qsound = random.choice(self.qsound_collections[state])
             qsound.play()
@@ -116,7 +116,8 @@ class CupModel:
         self.cup_type = cup_type
         self._pieces = pieces
 
-    # use @property (get/set) for pieces attribute, needed for databinding in related CupViewModel
+    # use @property (get/set) for pieces attribute,
+    # needed for databinding in related CupViewModel
     @property
     def pieces(self) -> int:
         return self._pieces
@@ -192,25 +193,22 @@ class PlayerModel(QObject):
         self.counterpart_cup_map = game_board.get_player_counterpart_cup_map(
             player_type
         )
-        self.kalah_id = 0 if player_type == player_type.PLAYER_1 else 1
         self.cup_ids = (
             list(range(0, 6))
-            if player_type == player_type.PLAYER_1
+            if player_type == PlayerType.PLAYER_1
             else list(range(6, 12))
         )
 
     def distribute_pieces(self, cup_id: int, pieces: int) -> StateType:
         cups = cycle(self.game_board)
 
-        old_button_styles = {}
-
         for cup in cups:
             if cup.id == cup_id:
                 cup.pieces = 0
 
                 if hasattr(cup, "_button"):
-                    cup._button.setText(str(0))
-                    self.animate_button.emit(cup._button, True, False)
+                    cup._button.setText(str(0))  # type: ignore
+                    self.animate_button.emit(cup._button, True, False)  # type: ignore
 
                 for _ in range(pieces):
 
@@ -219,10 +217,14 @@ class PlayerModel(QObject):
                     next_cup.pieces += 1
 
                     if hasattr(next_cup, "_button"):
-                        next_cup._button.setText(str(next_cup.pieces))
+                        next_cup._button.setText(str(next_cup.pieces))  # type: ignore
 
                         self.game_action_done.emit(StateType.CUP_PIECE_INSERT)
-                        self.animate_button.emit(next_cup._button, False, is_kalah)
+                        self.animate_button.emit(
+                            next_cup._button,  # type: ignore
+                            False,
+                            is_kalah,
+                        )
 
                     last_cup = next_cup
                     QApplication.processEvents()
@@ -252,16 +254,20 @@ class PlayerModel(QObject):
 
             self.counterpart_cup_map[last_cup].pieces = 0
             if hasattr(self.counterpart_cup_map[last_cup], "_button"):
-                self.counterpart_cup_map[last_cup]._button.setText(str(0))
+                self.counterpart_cup_map[last_cup]._button.setText(  # type: ignore
+                    str(0)
+                )
 
             pieces = last_cup.pieces
             last_cup.pieces = 0
             if hasattr(last_cup, "_button"):
-                last_cup._button.setText(str(0))
+                last_cup._button.setText(str(0))  # type: ignore
 
             self.game_board[6].pieces += counterpart_pieces + pieces  # players kalah
             if hasattr(self.game_board[6], "_button"):
-                self.game_board[6]._button.setText(str(self.game_board[6].pieces))
+                self.game_board[6]._button.setText(  # type: ignore
+                    str(self.game_board[6].pieces)
+                )
 
             state = StateType.LAST_IN_EMPTY_CUP
 
@@ -280,10 +286,10 @@ class GameModel(QObject):
         self.sound_manager.register(self.game_action_done)
 
         self.game_board = GameBoardModel(initial_amount_pieces)
-        self._player_1 = None
-        self._player_2 = None
-        self._current_turn = None
-        self._backuped_cup_styles = None
+        self._player_1: None | PlayerModel = None
+        self._player_2: None | PlayerModel = None
+        self._current_turn: None | PlayerModel = None
+        self._backuped_cup_styles: None | dict[QPushButton, str] = None
 
     def initialize_player(self) -> None:
         self._player_1 = PlayerModel(
@@ -303,11 +309,14 @@ class GameModel(QObject):
         self._backuped_cup_styles = {}
 
     def inserting_piece_animation(
-        self, cup_button: QPushButton, is_start_cup, is_kalah
-    ):
+        self, cup_button: QPushButton, is_start_cup: bool, is_kalah: bool
+    ) -> None:
         print(cup_button.objectName(), " >> START" if is_start_cup else "")
 
-        if cup_button not in self._backuped_cup_styles:
+        if (
+            self._backuped_cup_styles is not None
+            and cup_button not in self._backuped_cup_styles
+        ):
             self._backuped_cup_styles[cup_button] = cup_button.styleSheet()
 
         if is_start_cup:
@@ -345,16 +354,36 @@ class GameModel(QObject):
                     """
                 )
 
-    def finish_animation(self):
-        for button, style in self._backuped_cup_styles.items():
-            button.setStyleSheet(style)
+    def finish_animation(self) -> None:
+        if self._backuped_cup_styles is not None:
+            for button, style in self._backuped_cup_styles.items():
+                button.setStyleSheet(style)
 
     def distribute_pieces(self, cup_data: dict[str, str | int]) -> StateType:
-        if cup_data["cup_id"] not in self._current_turn.cup_ids:
+        if (
+            self._current_turn is None
+            or self._player_1 is None
+            or self._player_2 is None
+        ):
+            raise ValueError(
+                "One of following not set:"
+                f">>> {self._current_turn = }\n"
+                f">>> {self._player_1 = }\n"
+                f">>> {self._player_2 = }"
+            )
+
+        if (
+            self._current_turn is not None
+            and cup_data["cup_id"] not in self._current_turn.cup_ids
+        ):
             return StateType.GAME_CONTINUE
 
+        cup_id = int(cup_data["cup_id"])
+        pieces = int(cup_data["pieces"])
+
         state = self._current_turn.distribute_pieces(
-            cup_id=cup_data["cup_id"], pieces=cup_data["pieces"]
+            cup_id=cup_id,
+            pieces=pieces,
         )
 
         if self._continue_game():
@@ -367,7 +396,6 @@ class GameModel(QObject):
 
             self.game_action_done.emit(state)
 
-            print(self._current_turn.player_type)
             return StateType.GAME_CONTINUE
         else:
             if (
@@ -389,13 +417,18 @@ class GameModel(QObject):
             self.game_action_done.emit(state)
             return state
 
-    def _continue_game(self):
-        # player_1_cups = (cup for cup in self.game_board.cups if cup.id in self._player_1.cup_ids)
+    def _continue_game(self) -> bool:
+        if self._player_1 is None or self._player_2 is None:
+            raise ValueError(
+                "One of following not set:"
+                f">>> {self._player_1 = }\n"
+                f">>> {self._player_2 = }"
+            )
+
         player_1_cups = [
             self.game_board.cups[cup_id] for cup_id in self._player_1.cup_ids
         ]
 
-        # player_2_cups = (cup for cup in self.game_board.cups if cup.id in self._player_2.cup_ids)
         player_2_cups = [
             self.game_board.cups[cup_id] for cup_id in self._player_2.cup_ids
         ]
@@ -407,10 +440,10 @@ class GameModel(QObject):
                 self._player_1.game_board[6].pieces += cup.pieces
                 cup.pieces = 0
                 if hasattr(cup, "_button"):
-                    cup._button.setText(str("0"))
+                    cup._button.setText(str("0"))  # type: ignore
 
             if hasattr(self._player_1.game_board[6], "_button"):
-                self._player_1.game_board[6]._button.setText(
+                self._player_1.game_board[6]._button.setText(  # type: ignore
                     str(self._player_1.game_board[6].pieces)
                 )
 
@@ -418,10 +451,10 @@ class GameModel(QObject):
                 self._player_2.game_board[6].pieces += cup.pieces
                 cup.pieces = 0
                 if hasattr(cup, "_button"):
-                    cup._button.setText(str("0"))
+                    cup._button.setText(str("0"))  # type: ignore
 
             if hasattr(self._player_2.game_board[6], "_button"):
-                self._player_2.game_board[6]._button.setText(
+                self._player_2.game_board[6]._button.setText(  # type: ignore
                     str(self._player_2.game_board[6].pieces)
                 )
 

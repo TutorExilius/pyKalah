@@ -1,4 +1,4 @@
-# pyKalah v1.4.0
+# pyKalah v1.4.1
 
 Kalah, also called Kalaha or Mancala is a game in the mancala family invented in 
 the United States by William Julius Champion, Jr. in 1940. This game is sometimes

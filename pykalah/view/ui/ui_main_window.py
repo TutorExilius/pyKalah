@@ -17,7 +17,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(788, 585)
+        MainWindow.resize(788, 625)
         self.action_Close = QAction(MainWindow)
         self.action_Close.setObjectName(u"action_Close")
         self.action_About_Qt = QAction(MainWindow)
@@ -52,6 +52,18 @@ class Ui_MainWindow(object):
         self.verticalSpacer = QSpacerItem(0, 25, QSizePolicy.Minimum, QSizePolicy.Fixed)
 
         self.verticalLayout_10.addItem(self.verticalSpacer)
+
+        self.line = QFrame(self.frame_game)
+        self.line.setObjectName(u"line")
+        self.line.setStyleSheet(u"")
+        self.line.setFrameShape(QFrame.HLine)
+        self.line.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout_10.addWidget(self.line)
+
+        self.verticalSpacer_5 = QSpacerItem(0, 25, QSizePolicy.Minimum, QSizePolicy.Fixed)
+
+        self.verticalLayout_10.addItem(self.verticalSpacer_5)
 
         self.label_player_2_name = QLabel(self.frame_game)
         self.label_player_2_name.setObjectName(u"label_player_2_name")
@@ -598,7 +610,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"pyKalah v1.4.0", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"pyKalah v1.4.1", None))
         self.action_Close.setText(QCoreApplication.translate("MainWindow", u"&Close", None))
         self.action_About_Qt.setText(QCoreApplication.translate("MainWindow", u"&About Qt", None))
         self.label_state.setText(QCoreApplication.translate("MainWindow", u"Welcome to Kalah", None))

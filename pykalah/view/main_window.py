@@ -24,7 +24,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.initial_amount_pieces = initial_amount_pieces
 
         self.sound_manager = SoundManager()
-        self.game = None
+        self.game: None | Game = None
 
         super().__init__(parent)
         self.setupUi(self)
@@ -139,7 +139,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.sound_manager,
         )
         self.game.game_finished.connect(self.game_finished)
-        self.label_state.setText("Playing...")
+        self.label_state.setText(
+            f"<font color=red>{self.label_player_1_name.text()}"
+            "</font><br>it's your turn turn.."
+        )
 
         self.frame_game.setVisible(True)
         self.pushButton_start_game.setVisible(False)
@@ -156,7 +159,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             while time_passed < sleep_time_seconds:
                 self.label_state.setText(
-                    f"Finished: Winner is <font color=red>{self.game.winner}</font><br>.. game reset in {int(sleep_time_seconds-time_passed)} seconds."
+                    f"Finished: Winner is <font color=red>{self.game.winner}</font>!"
+                    f"<br>Game reset in {int(sleep_time_seconds-time_passed)} seconds."
                 )
 
                 end_time = time.time()
