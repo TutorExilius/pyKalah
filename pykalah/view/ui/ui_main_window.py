@@ -17,7 +17,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(788, 623)
+        MainWindow.resize(788, 585)
         self.action_Close = QAction(MainWindow)
         self.action_Close.setObjectName(u"action_Close")
         self.action_About_Qt = QAction(MainWindow)
@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_10.addWidget(self.label_state)
 
-        self.verticalSpacer = QSpacerItem(0, 8, QSizePolicy.Minimum, QSizePolicy.Fixed)
+        self.verticalSpacer = QSpacerItem(0, 25, QSizePolicy.Minimum, QSizePolicy.Fixed)
 
         self.verticalLayout_10.addItem(self.verticalSpacer)
 
@@ -64,6 +64,10 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayout_7.addLayout(self.verticalLayout_10)
+
+        self.verticalSpacer_3 = QSpacerItem(0, 16, QSizePolicy.Minimum, QSizePolicy.Fixed)
+
+        self.verticalLayout_7.addItem(self.verticalSpacer_3)
 
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
@@ -524,6 +528,10 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_7.addLayout(self.horizontalLayout_3)
 
+        self.verticalSpacer_4 = QSpacerItem(0, 16, QSizePolicy.Minimum, QSizePolicy.Fixed)
+
+        self.verticalLayout_7.addItem(self.verticalSpacer_4)
+
         self.verticalLayout_11 = QVBoxLayout()
         self.verticalLayout_11.setObjectName(u"verticalLayout_11")
         self.label_player_1_name = QLabel(self.frame_game)
@@ -563,6 +571,10 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_12.addLayout(self.horizontalLayout)
 
+        self.verticalSpacer_2 = QSpacerItem(0, 0, QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
+
+        self.verticalLayout_12.addItem(self.verticalSpacer_2)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -586,7 +598,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"pyKalah v1.2.0", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"pyKalah v1.4.0", None))
         self.action_Close.setText(QCoreApplication.translate("MainWindow", u"&Close", None))
         self.action_About_Qt.setText(QCoreApplication.translate("MainWindow", u"&About Qt", None))
         self.label_state.setText(QCoreApplication.translate("MainWindow", u"Welcome to Kalah", None))

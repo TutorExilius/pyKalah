@@ -1,10 +1,13 @@
 """The QT models, based on game_models. This Models will
 combine the models with the Qt world/UI"""
-from PySide2.QtCore import QObject, Signal
-from PySide2.QtWidgets import QMainWindow, QMessageBox, QPushButton
 
-import pykalah.models
-from pykalah.models import GameModel, PlayerType, StateType
+import random
+
+from PySide2.QtCore import QObject, Signal
+from PySide2.QtWidgets import (QApplication, QMainWindow, QMessageBox,
+                               QPushButton)
+
+from pykalah.models import GameModel, PlayerType, SoundManager, StateType
 
 
 class Game(QObject):
@@ -14,12 +17,15 @@ class Game(QObject):
         self,
         parent_window: QMainWindow,
         initial_amount_pieces: int,
+        sound_manager: SoundManager,
     ):
         super(Game, self).__init__()
 
+        self.sound_manager = sound_manager
+
         self.winner = None
         self.parent_window = parent_window
-        self.game_model = GameModel(initial_amount_pieces)
+        self.game_model = GameModel(initial_amount_pieces, self.sound_manager)
         self._bind_cup_buttons()
 
         # connections
@@ -164,6 +170,13 @@ class Game(QObject):
             StateType.FINISHED_WITH_PLAYER_1_WON,
             StateType.FINISHED_WITH_PLAYER_2_WON,
         ]:
+            self.parent_window.label_player_1_name.setStyleSheet(
+                "color: black; font-size: 19pt; font-weight:normal;"
+            )
+            self.parent_window.label_player_2_name.setStyleSheet(
+                "color: black; font-size: 19pt; font-weight:normal;"
+            )
+
             msg_box = QMessageBox()
             msg_box.setWindowTitle("Finished")
 

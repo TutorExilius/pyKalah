@@ -1,9 +1,12 @@
 """The game classes"""
+import random
 import time
 from enum import IntEnum, auto
 from itertools import cycle
+from pathlib import Path
 
 from PySide2.QtCore import QObject, Signal
+from PySide2.QtMultimedia import QSound
 from PySide2.QtWidgets import QApplication, QPushButton
 
 
@@ -18,12 +21,82 @@ class CupType(IntEnum):
 
 
 class StateType(IntEnum):
+    CUP_PIECE_INSERT = auto()
     LAST_IN_EMPTY_CUP = auto()
     LAST_IN_KHALA = auto()
     FINISHED_WITH_DRAW = auto()
     FINISHED_WITH_PLAYER_1_WON = auto()
     FINISHED_WITH_PLAYER_2_WON = auto()
     GAME_CONTINUE = auto()
+    GAME_CLOSE = auto()
+
+
+class SoundManager(QObject):
+    def __init__(self):
+        super(SoundManager, self).__init__()
+
+        self.registered_signals = []
+
+        self.qsound_collections = {
+            StateType.CUP_PIECE_INSERT: [
+                QSound(str(Path(__file__).parent / "sounds" / f"cup_insert_1.wav")),
+                QSound(str(Path(__file__).parent / "sounds" / f"cup_insert_2.wav")),
+            ],
+            StateType.LAST_IN_EMPTY_CUP: [
+                QSound(
+                    str(Path(__file__).parent / "sounds" / f"last_in_empty_cup_1.wav")
+                ),
+                QSound(
+                    str(Path(__file__).parent / "sounds" / f"last_in_empty_cup_2.wav")
+                ),
+            ],
+            StateType.LAST_IN_KHALA: [
+                QSound(
+                    str(Path(__file__).parent / "sounds" / f"last_in_kalah_sound_1.wav")
+                ),
+            ],
+            StateType.FINISHED_WITH_PLAYER_1_WON: [
+                QSound(
+                    str(
+                        Path(__file__).parent
+                        / "sounds"
+                        / f"finished_with_winner_sound_1.wav"
+                    )
+                ),
+            ],
+            StateType.FINISHED_WITH_PLAYER_2_WON: [
+                QSound(
+                    str(
+                        Path(__file__).parent
+                        / "sounds"
+                        / f"finished_with_winner_sound_1.wav"
+                    )
+                ),
+            ],
+            StateType.FINISHED_WITH_DRAW: [
+                QSound(
+                    str(
+                        Path(__file__).parent
+                        / "sounds"
+                        / f"finished_with_draw_sound_1.wav"
+                    )
+                ),
+            ],
+            StateType.GAME_CLOSE: [
+                QSound(str(Path(__file__).parent / "sounds" / f"bye.wav")),
+            ],
+        }
+
+    def register(self, signal: Signal):
+        if signal not in self.registered_signals:
+            signal.connect(self._play)
+            self.registered_signals.append(signal)
+
+    def _play(self, state: StateType):
+        if state in self.qsound_collections:
+            qsound = random.choice(self.qsound_collections[state])
+            qsound.play()
+            print("Play sound:", qsound.fileName())
 
 
 class CupModel:
@@ -101,13 +174,18 @@ class GameBoardModel:
 class PlayerModel(QObject):
     animate_button = Signal(QPushButton, bool, bool)
     finish_animation = Signal()
+    game_action_done = Signal(StateType)
 
     def __init__(
         self,
         game_board: GameBoardModel,
         player_type: PlayerType,
+        sound_manager: SoundManager,
     ):
         super(PlayerModel, self).__init__()
+
+        self.sound_manager = sound_manager
+        self.sound_manager.register(self.game_action_done)
 
         self.player_type = player_type
         self.game_board = game_board.get_player_cups(player_type)
@@ -142,10 +220,13 @@ class PlayerModel(QObject):
 
                     if hasattr(next_cup, "_button"):
                         next_cup._button.setText(str(next_cup.pieces))
+
+                        self.game_action_done.emit(StateType.CUP_PIECE_INSERT)
                         self.animate_button.emit(next_cup._button, False, is_kalah)
 
                     last_cup = next_cup
                     QApplication.processEvents()
+
                     time.sleep(0.2)
 
                 result = self._check_rule(last_cup)
@@ -187,10 +268,17 @@ class PlayerModel(QObject):
         return state
 
 
-class GameModel:
+class GameModel(QObject):
     """Game"""
 
-    def __init__(self, initial_amount_pieces: int):
+    game_action_done = Signal(StateType)
+
+    def __init__(self, initial_amount_pieces: int, sound_manager: SoundManager):
+        super(GameModel, self).__init__()
+
+        self.sound_manager = sound_manager
+        self.sound_manager.register(self.game_action_done)
+
         self.game_board = GameBoardModel(initial_amount_pieces)
         self._player_1 = None
         self._player_2 = None
@@ -198,8 +286,12 @@ class GameModel:
         self._backuped_cup_styles = None
 
     def initialize_player(self) -> None:
-        self._player_1 = PlayerModel(self.game_board, PlayerType.PLAYER_1)
-        self._player_2 = PlayerModel(self.game_board, PlayerType.PLAYER_2)
+        self._player_1 = PlayerModel(
+            self.game_board, PlayerType.PLAYER_1, self.sound_manager
+        )
+        self._player_2 = PlayerModel(
+            self.game_board, PlayerType.PLAYER_2, self.sound_manager
+        )
         self._current_turn = self._player_1
 
         self._player_1.animate_button.connect(self.inserting_piece_animation)
@@ -273,6 +365,8 @@ class GameModel:
                     else self._player_1
                 )
 
+            self.game_action_done.emit(state)
+
             print(self._current_turn.player_type)
             return StateType.GAME_CONTINUE
         else:
@@ -292,6 +386,7 @@ class GameModel:
                 print("DRAW")
                 state = StateType.FINISHED_WITH_DRAW
 
+            self.game_action_done.emit(state)
             return state
 
     def _continue_game(self):

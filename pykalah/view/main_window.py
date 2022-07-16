@@ -2,11 +2,12 @@
 import time
 from functools import partial
 
-from PySide2.QtCore import Signal
+from PySide2.QtCore import QEventLoop, QTime, Signal
 from PySide2.QtWidgets import (QApplication, QMainWindow, QMessageBox,
                                QPushButton, QWidget)
 
 from pykalah.game import Game
+from pykalah.models import SoundManager, StateType
 from pykalah.view.ui.ui_main_window import Ui_MainWindow
 
 
@@ -21,6 +22,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         initial_amount_pieces: int = 10,
     ):
         self.initial_amount_pieces = initial_amount_pieces
+
+        self.sound_manager = SoundManager()
+        self.game = None
 
         super().__init__(parent)
         self.setupUi(self)
@@ -129,7 +133,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.reset_cup_buttons()
         self.reset_kalah_buttons()
 
-        self.game = Game(self, self.initial_amount_pieces)
+        self.game = Game(
+            self,
+            self.initial_amount_pieces,
+            self.sound_manager,
+        )
         self.game.game_finished.connect(self.game_finished)
         self.label_state.setText("Playing...")
 
@@ -140,15 +148,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def game_finished(self, force_finish=False):
         if not force_finish:
-            self.label_state.setText(
-                f"Finished: Winner is {self.game.winner}<br>.. game reset in 10 seconds."
-            )
-            QApplication.processEvents()
+            sleep_time_seconds = 10
 
-            time.sleep(10)
+            start_time = time.time()
+            end_time = start_time
+            time_passed = end_time - start_time
+
+            while time_passed < sleep_time_seconds:
+                self.label_state.setText(
+                    f"Finished: Winner is <font color=red>{self.game.winner}</font><br>.. game reset in {int(sleep_time_seconds-time_passed)} seconds."
+                )
+
+                end_time = time.time()
+                time_passed = end_time - start_time
+
+                QApplication.processEvents()
 
         self.frame_game.setVisible(False)
         self.pushButton_start_game.setVisible(True)
 
     def on_cup_button_clicked(self, cup_button):
         self.cup_clicked.emit(cup_button)
+
+    def closeEvent(self, event):
+        self.sound_manager._play(StateType.GAME_CLOSE)
+
+        die_time = QTime.currentTime().addSecs(1)
+
+        while QTime.currentTime() < die_time:
+            QApplication.processEvents(QEventLoop.AllEvents, 100)
+
+        event.accept()
