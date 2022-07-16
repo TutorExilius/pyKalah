@@ -1,4 +1,5 @@
 """The game classes"""
+import math
 import random
 import time
 from enum import IntEnum, auto
@@ -229,7 +230,7 @@ class PlayerModel(QObject):
                     last_cup = next_cup
                     QApplication.processEvents()
 
-                    time.sleep(0.2)
+                    time.sleep(max(0.01, (10 - math.log2(pieces)) / 65))
 
                 result = self._check_rule(last_cup)
                 break
